@@ -231,11 +231,11 @@
         `<div class="item-top">` +
         `<input type="checkbox" class="visit-check" data-visit="${esc(s.id)}" ${v ? "checked" : ""} aria-label="訪問済み" title="訪問済み">` +
         `<span class="item-name">${esc(s.name)}</span>` +
-        genreChip(s) + `</div>` +
+        genreChip(s) +
+        `<button class="btn link item-edit" type="button" data-edit="${esc(s.id)}">編集</button></div>` +
         (v ? `<label class="item-visited">訪問日 <input type="date" data-visit-date="${esc(s.id)}" value="${esc(s.visitedAt || "")}"></label>` : "") +
         (s.memo ? `<div class="item-memo">${esc(s.memo)}</div>` : "") +
-        (hasLoc(s) ? "" : `<div class="item-nopin">位置が未設定です</div>`) +
-        `<div class="item-foot"><button class="btn link item-edit" type="button" data-edit="${esc(s.id)}">編集</button></div>`;
+        (hasLoc(s) ? "" : `<div class="item-nopin">位置が未設定です</div>`);
       return li;
     }));
     els.empty.hidden = shops.length > 0;
