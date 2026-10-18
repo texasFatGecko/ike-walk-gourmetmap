@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap&text=%E3%81%84%E3%81%91%E6%95%A3%E6%AD%A9%E3%82%B0%E3%83%AB%E3%83%A1%E3%83%9E%E3%83%83%E3%83%97">
-  <link rel="stylesheet" href="style.css?v=2026.1018.02">
+  <link rel="stylesheet" href="style.css?v=2026.1018.03">
 </head>
 <body>
   <div class="app">
@@ -35,7 +35,7 @@
       <ul class="list" id="list"></ul>
       <p class="empty" id="empty" hidden>まだお店がありません。「＋ お店を追加」から登録してください。</p>
       <!-- 公開のたびにここと、?v= の番号を同じ値に更新する -->
-      <p class="version">ver 2026.1018.02</p>
+      <p class="version">ver 2026.1018.03</p>
     </aside>
 
     <main class="map-wrap">
@@ -54,12 +54,16 @@
       <label><span>店名 <span class="req">必須</span></span>
         <input id="f-name" name="name" required maxlength="80">
       </label>
-      <label>ジャンル
+      <label>ジャンル（メイン・ピンの色になります）
         <select id="f-genre" name="genre">
           <option value="">選んでください</option>
         </select>
         <span class="hint" id="genre-hint"></span>
       </label>
+      <div class="field">
+        <span class="field-label">サブジャンル（複数選べます・絞り込みで使います）</span>
+        <div class="sub-chips" id="f-subs" role="group" aria-label="サブジャンル"></div>
+      </div>
       <label>住所
         <div class="row">
           <input id="f-address" name="address" maxlength="200" placeholder="住所や店名で位置を検索">
@@ -97,7 +101,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="config.js?v=2026.1018.02"></script>
-  <script src="app.js?v=2026.1018.02"></script>
+  <script src="config.js?v=2026.1018.03"></script>
+  <script src="app.js?v=2026.1018.03"></script>
 </body>
 </html>

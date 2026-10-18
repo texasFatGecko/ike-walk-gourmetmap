@@ -12,6 +12,8 @@
     { name: "カレー・エスニック", label: "カレー・エスニック", color: "#8b5a2b", examples: ["インド料理", "タイ料理", "ネパール料理", "スパイスカレー"] },
     { name: "韓国料理", label: "韓国料理", color: "#d6336c", examples: ["焼肉", "サムギョプサル", "チゲ", "ビビンバ"] },
     { name: "カフェ・スイーツ", label: "カフェ・スイーツ", color: "#7950f2", examples: ["喫茶店", "パンケーキ", "ケーキ", "甘味処", "ベーカリー"] },
+    { name: "肉料理", label: "肉料理", color: "#343a40", examples: ["焼肉", "焼き鳥", "ステーキ", "ハンバーグ"] },
+    { name: "海鮮料理", label: "海鮮料理", color: "#0c8599", examples: ["寿司", "刺身", "海鮮丼", "魚介料理"] },
     { name: "その他", label: "その他", color: "#1c7ed6", examples: ["メキシコ料理", "中東料理", "ベトナム料理", "ジャンル不明など"] },
   ];
   const NO_GENRE_COLOR = "#868e96";
@@ -89,7 +91,33 @@
     err: $("err"), delBtn: $("del-btn"), cancelBtn: $("cancel-btn"), saveBtn: $("save-btn"),
     hideVisited: $("hide-visited"), visited: $("f-visited"), visitedAt: $("f-visited-at"),
     genreFilter: $("genre-filter"), genreHint: $("genre-hint"), legendList: $("legend-list"), author: $("f-author"),
+    subs: $("f-subs"),
   };
+
+  // サブジャンル：メイン以外のジャンルをボタンで複数選ぶ
+  let selectedSubs = new Set();
+  function renderSubChips() {
+    selectedSubs.delete(els.genre.value); // メインと同じものはサブにしない
+    els.subs.replaceChildren(...GENRES.filter((g) => g.name !== els.genre.value).map((g) => {
+      const b = document.createElement("button");
+      const on = selectedSubs.has(g.name);
+      b.type = "button";
+      b.className = "sub-chip" + (on ? " on" : "");
+      b.style.setProperty("--chip", g.color);
+      b.setAttribute("aria-pressed", String(on));
+      b.dataset.genre = g.name;
+      b.textContent = (on ? "✓ " : "") + g.name;
+      return b;
+    }));
+  }
+  els.subs.addEventListener("click", (e) => {
+    const b = e.target.closest(".sub-chip");
+    if (!b) return;
+    const n = b.dataset.genre;
+    if (selectedSubs.has(n)) selectedSubs.delete(n); else selectedSubs.add(n);
+    renderSubChips();
+  });
+  const subsOf = (s) => (Array.isArray(s.subGenres) ? s.subGenres.filter((n) => genreOf(n)) : []);
 
   // ジャンルの選択肢・説明（凡例）を作る
   for (const sel of [els.genre, els.genreFilter]) {
@@ -104,7 +132,7 @@
     const g = genreOf(els.genre.value);
     els.genreHint.textContent = g ? `例：${g.examples.join("、")}` : "";
   }
-  els.genre.addEventListener("change", updateGenreHint);
+  els.genre.addEventListener("change", () => { updateGenreHint(); renderSubChips(); });
 
   if (useFirebase) {
     els.mode.textContent = "リンクを知っている人と共有中";
@@ -165,8 +193,8 @@
     const g = els.genreFilter.value;
     return shops.filter((s) =>
       !(els.hideVisited.checked && isVisited(s)) &&
-      (!g || normalizeGenre(s.genre) === g) &&
-      (!q || [s.name, s.genre, s.address, s.memo, s.author].some((v) => (v || "").toLowerCase().includes(q)))
+      (!g || normalizeGenre(s.genre) === g || subsOf(s).includes(g)) && // メインかサブのどちらかに当てはまれば表示
+      (!q || [s.name, s.genre, subsOf(s).join(" "), s.address, s.memo, s.author].some((v) => (v || "").toLowerCase().includes(q)))
     );
   }
 
@@ -180,7 +208,7 @@
     const url = safeUrl(s.url);
     const g = normalizeGenre(s.genre);
     return `<div class="pop-name">${esc(s.name)}</div>` +
-      (g ? `<div class="pop-genre">${esc(g)}</div>` : "") +
+      (g ? `<div class="pop-genre">${esc(g)}${subsOf(s).length ? "（サブ：" + esc(subsOf(s).join("、")) + "）" : ""}</div>` : "") +
       (s.author ? `<div class="pop-genre">記入：${esc(s.author)}</div>` : "") +
       (isVisited(s) ? `<div class="pop-genre">訪問済み${s.visitedAt ? "（" + esc(fmtDate(s.visitedAt)) + "）" : ""}</div>` : "") +
       (s.address ? `<div>${esc(s.address)}</div>` : "") +
@@ -260,10 +288,18 @@
         await store.update(t.dataset.visitDate, { visitedAt: t.value || null });
       }
     } catch (err) {
-      alertBar("保存できませんでした。通信状態を確認してください。");
+      alertBar(saveErrorMessage(err));
       render();
     }
   });
+
+  // 拒否（ルール）と通信エラーを分けて伝える
+  function saveErrorMessage(err) {
+    if (err && err.code === "permission-denied") {
+      return "保存が許可されませんでした。Firebase のルールが最新になっているか確認してください。";
+    }
+    return "保存できませんでした。通信状態を確認してもう一度お試しください。";
+  }
 
   function alertBar(msg) {
     els.mode.textContent = msg;
@@ -303,6 +339,8 @@
     els.name.value = shop?.name || "";
     els.genre.value = normalizeGenre(shop?.genre);
     updateGenreHint();
+    selectedSubs = new Set(shop ? subsOf(shop) : []);
+    renderSubChips();
     // 記入者名：編集時は元の記入者、新規はこのブラウザで前回使った名前
     let lastAuthor = "";
     try { lastAuthor = localStorage.getItem("author-name") || ""; } catch (e) { /* 覚えられなくても動く */ }
@@ -423,6 +461,7 @@
     const data = {
       name,
       genre: els.genre.value,
+      subGenres: GENRES.map((g) => g.name).filter((n) => selectedSubs.has(n) && n !== els.genre.value),
       author: els.author.value.trim(),
       address: els.address.value.trim(),
       memo: els.memo.value.trim(),
@@ -440,7 +479,7 @@
       closeForm();
       if (data.lat != null) map.flyTo([data.lat, data.lng], Math.max(map.getZoom(), 15), { duration: 0.6 });
     } catch (err) {
-      showErr("保存できませんでした。通信状態を確認してもう一度お試しください。");
+      showErr(saveErrorMessage(err));
     } finally {
       els.saveBtn.disabled = false;
     }
