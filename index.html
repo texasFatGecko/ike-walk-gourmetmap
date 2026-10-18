@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 検索エンジンに載せない（リンクを知っている人だけで使うため） -->
+  <meta name="robots" content="noindex, nofollow">
   <title>いけ散歩グルメマップ</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap&text=%E3%81%84%E3%81%91%E6%95%A3%E6%AD%A9%E3%82%B0%E3%83%AB%E3%83%A1%E3%83%9E%E3%83%83%E3%83%97">
-  <link rel="stylesheet" href="style.css?v=2026.1018.01">
+  <link rel="stylesheet" href="style.css?v=2026.1018.02">
 </head>
 <body>
   <div class="app">
@@ -33,7 +35,7 @@
       <ul class="list" id="list"></ul>
       <p class="empty" id="empty" hidden>まだお店がありません。「＋ お店を追加」から登録してください。</p>
       <!-- 公開のたびにここと、?v= の番号を同じ値に更新する -->
-      <p class="version">ver 2026.1018.01</p>
+      <p class="version">ver 2026.1018.02</p>
     </aside>
 
     <main class="map-wrap">
@@ -95,7 +97,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="config.js?v=2026.1018.01"></script>
-  <script src="app.js?v=2026.1018.01"></script>
+  <script src="config.js?v=2026.1018.02"></script>
+  <script src="app.js?v=2026.1018.02"></script>
 </body>
 </html>

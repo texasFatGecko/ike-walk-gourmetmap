@@ -207,8 +207,7 @@
         (v ? `<label class="item-visited">訪問日 <input type="date" data-visit-date="${esc(s.id)}" value="${esc(s.visitedAt || "")}"></label>` : "") +
         (s.memo ? `<div class="item-memo">${esc(s.memo)}</div>` : "") +
         (hasLoc(s) ? "" : `<div class="item-nopin">位置が未設定です</div>`) +
-        `<div class="item-foot"><span class="item-author">${s.author ? "記入：" + esc(s.author) : ""}</span>` +
-        `<button class="btn link item-edit" type="button" data-edit="${esc(s.id)}">編集</button></div>`;
+        `<div class="item-foot"><button class="btn link item-edit" type="button" data-edit="${esc(s.id)}">編集</button></div>`;
       return li;
     }));
     els.empty.hidden = shops.length > 0;
